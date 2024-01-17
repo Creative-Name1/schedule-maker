@@ -1,0 +1,4 @@
+Class name: Schedule
+contains a list of events, sorting algorithm, preset methods (will add later), and writes schedule to a text file
+
+I want to make timer run in background, and open window when next event happen
