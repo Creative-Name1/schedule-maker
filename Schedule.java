@@ -7,10 +7,12 @@ public class Schedule {
 
     public Schedule(ArrayList<Event> eList) {
         eventList = new ArrayList<>(Arrays.asList(dateSort(eList)));
+        removeCollisions();
     }
 
     public Schedule(Event[] eList) {
         eventList = new ArrayList<>(Arrays.asList(dateSort(eList)));
+        removeCollisions();
     }
 
     private static Event[] dateSort(ArrayList<Event> e) {
@@ -53,7 +55,14 @@ public class Schedule {
         }
         return temp;
     }
-
+  
+    private void removeCollisions() {
+      for (int i = 0; i < eventList.size() - 1; i++) {
+        if (eventList.get(i).compareTo(eventList.get(i + 1), Event.END_DATE, Event.START_DATE) == -1) {
+          eventList.get(i).setEndDate(eventList.get(i + 1).getStartDate());
+        }
+      }
+    }
 
     public Event[] getEventList() {
         return eventList.toArray(new Event[eventList.size()]);
@@ -62,7 +71,6 @@ public class Schedule {
     private int getNextEventIndex() {
         int currentInterval = eventList.size() - 1;
         Event rn = new Event();
-        System.out.println(eventList);
         while (currentInterval > 0) {
             if (rn.compareTo(eventList.get(currentInterval)) == -1) {
                 currentInterval = currentInterval + (eventList.size() - 1 - currentInterval)/2;
@@ -71,7 +79,6 @@ public class Schedule {
             } else {
                 return currentInterval;
             }
-            System.out.println();
         }
         return -1;
     }
@@ -87,5 +94,15 @@ public class Schedule {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public String toString() {
+      String out = "Schedule:\n";
+
+      for (int i = 0; i < eventList.size(); i++) {
+        out += eventList.get(i) + "\n";
+      }
+      
+      return out;
     }
 }
