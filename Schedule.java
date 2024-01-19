@@ -3,11 +3,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 
 public class Schedule {
-    private ArrayList<Event> eventList = new ArrayList<Event>();
+    private ArrayList<Event> eventList;
 
     public Schedule(ArrayList<Event> eList) {
         eventList = new ArrayList<>(Arrays.asList(dateSort(eList)));
     }
+
     public Schedule(Event[] eList) {
         eventList = new ArrayList<>(Arrays.asList(dateSort(eList)));
     }
@@ -19,7 +20,8 @@ public class Schedule {
         Event emptyGlass = new Event(); // reference to BroCode tutorial just 'cause
 
         // for loop for
-        for (int startElem = 0; startElem < temp.length; startElem++) {
+        for (int startElem = 0; startElem < temp.length - 1; startElem++) {
+            smallest = startElem;
             for (int currentElem = startElem + 1; currentElem < temp.length; currentElem++) {
                 if (temp[currentElem].compareTo(temp[smallest]) == 1) {
                     smallest = currentElem;
@@ -27,7 +29,7 @@ public class Schedule {
             }
             emptyGlass = temp[startElem];
             temp[startElem] = temp[smallest];
-            temp[smallest] = temp[startElem];
+            temp[smallest] = emptyGlass;
         }
         return temp;
     }
@@ -38,7 +40,8 @@ public class Schedule {
         Event emptyGlass = new Event(); // reference to BroCode tutorial just 'cause
 
         // for loop for
-        for (int startElem = 0; startElem < temp.length; startElem++) {
+        for (int startElem = 0; startElem < temp.length - 1; startElem++) {
+            smallest = startElem;
             for (int currentElem = startElem + 1; currentElem < temp.length; currentElem++) {
                 if (temp[currentElem].compareTo(temp[smallest]) == 1) {
                     smallest = currentElem;
@@ -46,8 +49,7 @@ public class Schedule {
             }
             emptyGlass = temp[startElem];
             temp[startElem] = temp[smallest];
-            temp[smallest] = temp[startElem];
-            smallest++;
+            temp[smallest] = emptyGlass;
         }
         return temp;
     }
@@ -55,5 +57,38 @@ public class Schedule {
 
     public Event[] getEventList() {
         return eventList.toArray(new Event[eventList.size()]);
+    }
+
+    private int getNextEventIndex() {
+        int currentInterval = eventList.size() - 1;
+        Event rn = new Event();
+        System.out.println(eventList);
+        while (currentInterval > 0) {
+            System.out.print(currentInterval);
+            if (rn.compareTo(eventList.get(currentInterval)) == -1) {
+                currentInterval = currentInterval + (eventList.size() - 1 - currentInterval)/2;
+                System.out.print(", went up by half");
+            } else if (rn.compareTo(eventList.get(currentInterval)) == 1 && rn.compareTo(eventList.get(currentInterval - 1)) == 1) {
+                currentInterval /= 2;
+                System.out.print(", halved");
+            } else {
+                return currentInterval;
+            }
+            System.out.println();
+        }
+        return -1;
+    }
+
+    public Event getNextEvent() {
+        int temp = getNextEventIndex();
+        if (temp > -1) {
+            return eventList.get(temp);
+        } else {
+            try {
+                throw new Exception("You just finished your last task.");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
