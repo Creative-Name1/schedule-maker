@@ -65,6 +65,7 @@ public class Schedule {
     }
 
     public void applyPreset() {
+        Event e = new Event();
       Date a = new Date();
       Date b = new Date();
       ArrayList<Event> out = new ArrayList<Event>();
@@ -85,6 +86,23 @@ public class Schedule {
       }
       eventList.addAll(out);
       eventList = new ArrayList<>(Arrays.asList(dateSort(eventList)));
+
+      while (true) {
+          for (int i = 0; i < eventList.size(); i++) {
+              e = eventList.get(i);
+              if (e.getEndMinute() < 30) {
+                  e.setEndMinute(e.getEndMinute() + 30);
+              } else {
+                  e.setEndHour(e.getEndHour() + 1);
+                  e.setEndMinute(e.getEndMinute() - 30);
+              }
+              if (checkCollision(e)) {
+                  if (checkCollisionSpecial(eventList.get(i)).getType().equals("Break_Special")) {
+                      eventList.remove()
+                  }
+              }
+          }
+      }
     }
 
     public Event[] checkCollision(Event e, ArrayList<Event> eL) {
@@ -105,6 +123,30 @@ public class Schedule {
       }
       System.out.println(out);
       return out.toArray(new Event[out.size()]);
+    }
+
+    public Event checkCollisionSpecial(Event e) {
+        ArrayList<Event> eList = new ArrayList<> (eventList);
+        ArrayList<Event> out = new ArrayList<Event>();
+        while (true) {
+            if (eList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
+                out.add(eList.get(getNextEventIndex(e)));
+                eList.remove(getNextEventIndex(e));
+            } else {
+                break;
+            }
+        }
+        for (int i = 0; i < getNextEventIndex(e); i++) {
+            if (eList.get(i).compareTo(e, Event.END_DATE, Event.START_DATE) == -1) {
+                out.add(eList.get(i));
+            }
+        }
+        for (int i = 0; i < out.size(); i++) {
+            if (out.get(i).getType().equals("Break_Special")) {
+                return out.get(i);
+            }
+        }
+        return new Event();
     }
 
     public boolean checkCollision(Event e) {
@@ -158,6 +200,10 @@ public class Schedule {
             }
         }
         return -1;
+    }
+
+    private int getEventIndex(Event e) {
+        return 0;
     }
 
     private int getNextEventIndex(Event rn) {

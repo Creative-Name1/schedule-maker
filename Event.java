@@ -108,6 +108,15 @@ public class Event implements Comparable {
       Calendar c = Calendar.getInstance();
       end = new Date(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), h, m, s);
     }
+    public void setEndHour(int n) {
+        end.setHours(n);
+    }
+    public void setEndMinute(int n) {
+        end.setMinutes(n);
+    }
+    public void setEndSecond(int n) {
+        end.setSeconds(n);
+    }
 
     // misc
     public String toString() {
@@ -147,6 +156,24 @@ public class Event implements Comparable {
             }
         }
 
+        // IF O IS NOT AN EVENT OBJECT, THROWS ERROR
+        else {
+            try {
+                throw new Exception("Not an event object, dummy");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public boolean equals(Object o) {
+        if (o instanceof Event) {
+            Event e = (Event) o;
+            if (e.getStartDate().equals(this.getStartDate()) && e.getEndDate().equals(this.getEndDate()) && e.getName().equals(this.getName()) && e.getType().equals(this.getType())) {
+                return true;
+            }
+            return false;
+        }
         // IF O IS NOT AN EVENT OBJECT, THROWS ERROR
         else {
             try {

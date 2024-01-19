@@ -4,13 +4,29 @@ contains a list of events, sorting algorithm, preset methods (will add later), a
 I want to make timer run in background, and open window when next event happen
 
 
-
+things to add today:
+- heavy work preset function
 
 things to add later:
 - selection sort when make new schedule, bubble sort when add element to schedule
 - ability to change schedule after
+- timer will run in background using .bat files
 
-maxlistindex = 3
-a = 0
-b = 0
-smallest = 0
+SCHEDULE PRESET PSEUDOCODE:
+check collision function for 10 minutes before every *transitional activity*
+make a list of all the non-colliding 10-minute breaks as events starting 10 minutes before following events start, with special type
+append to schedule
+sort
+loop:
+    use collision function to check for 30 minutes after each activity
+    if colliding with 10 minute function: delete the one in question
+    make list of all non colliding 30 minute blocks, in form of 25 minute work, 5 minute break
+    if list is empty:
+        break
+    append
+    sort
+check each item of the list like so:
+if the next item starts after the end of the current one, append to a list a break event that spans the time between them
+add the contents of the list to the schedule
+sort
+done!
