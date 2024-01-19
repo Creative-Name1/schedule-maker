@@ -64,13 +64,10 @@ public class Schedule {
         Event rn = new Event();
         System.out.println(eventList);
         while (currentInterval > 0) {
-            System.out.print(currentInterval);
             if (rn.compareTo(eventList.get(currentInterval)) == -1) {
                 currentInterval = currentInterval + (eventList.size() - 1 - currentInterval)/2;
-                System.out.print(", went up by half");
             } else if (rn.compareTo(eventList.get(currentInterval)) == 1 && rn.compareTo(eventList.get(currentInterval - 1)) == 1) {
                 currentInterval /= 2;
-                System.out.print(", halved");
             } else {
                 return currentInterval;
             }

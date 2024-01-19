@@ -4,24 +4,44 @@ contains a list of events, sorting algorithm, preset methods (will add later), a
 I want to make timer run in background, and open window when next event happen
 
 
-
+things to add today:
+- schedule fix event collisions function
+- schedule collision function
+- heavy work preset function
 
 things to add later:
 - selection sort when make new schedule, bubble sort when add element to schedule
 - ability to change schedule after
+- timer will run in background using .bat files
 
+COLLISION FUNCTION PSEUDOCODE:
+make a copy of current list
+search nextevent, passing in the current event + 1 second and list copy
+if it finds an event that starts at a time less than the ending of the event passed in, add it to a list and remove it from the copy
+repeat until it finds something that is more than the ending of the list
+then linear search through every event preceding the one passed into it, comparing its end date to the start date of the one passed in
+if it's more, append that one to the colliding list
+return the list
 
-0 3:2:27
-1 6:22:0
-2 7:9:32
-3 12:34:5
-4 12:34:6
-5 14:22:0
-6 16:27:6
-7 17:23:0
-8 19:30:0
-9 21:12:27
-10 23:12:27
+SCHEDULE FIX EVENT COLLISIONS FUNCTION PSEUDOCODE:
+compare every event's end date to the following event's end date
+if there's a problem, change the event's end date to the start of the next one's.
 
-10, halved
-5
+SCHEDULE PRESET PSEUDOCODE:
+check collision function for 10 minutes before every transitional activity
+make a list of all the non-colliding 10-minute breaks as events starting 10 minutes before following events start, with special type
+append to schedule
+sort
+loop:
+    use collision function to check for 30 minutes after each activity
+    if colliding with 10 minute function: delete the one in question
+    make list of all non colliding 30 minute blocks, in form of 25 minute work, 5 minute break
+    if list is empty:
+        break
+    append
+    sort
+check each item of the list like so:
+if the next item starts after the end of the current one, append to a list a break event that spans the time between them
+add the contents of the list to the schedule
+sort
+done!
