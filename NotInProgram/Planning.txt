@@ -23,10 +23,6 @@ then linear search through every event preceding the one passed into it, compari
 if it's more, append that one to the colliding list
 return the list
 
-SCHEDULE FIX EVENT COLLISIONS FUNCTION PSEUDOCODE:
-compare every event's end date to the following event's end date
-if there's a problem, change the event's end date to the start of the next one's.
-
 SCHEDULE PRESET PSEUDOCODE:
 check collision function for 10 minutes before every transitional activity
 make a list of all the non-colliding 10-minute breaks as events starting 10 minutes before following events start, with special type

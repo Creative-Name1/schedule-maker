@@ -13,8 +13,9 @@ public class Schedule {
     public Schedule(Event[] eList) {
         eventList = new ArrayList<>(Arrays.asList(dateSort(eList)));
         removeCollisions();
+        checkCollision(new Event(7, 3, 14, 8, 28, 50), eList);
     }
-
+  
     private static Event[] dateSort(ArrayList<Event> e) {
         Event[] temp = new Event[e.size()];
         temp = e.toArray(temp);
@@ -64,6 +65,49 @@ public class Schedule {
       }
     }
 
+    public Event[] checkCollision(Event e, ArrayList<Event> eL) {
+      ArrayList<Event> eList = new ArrayList<> (eL);
+      ArrayList<Event> out = new ArrayList<Event>();
+      while (true) {
+        if (eList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
+          out.add(eList.get(getNextEventIndex(e)));
+          eList.remove(getNextEventIndex(e));
+        } else {
+          break;
+        }
+      }
+      for (int i = 0; i < getNextEventIndex(e); i++) {
+        if (eList.get(i).compareTo(e, Event.END_DATE, Event.START_DATE) == -1) {
+          out.add(eList.get(i));
+        }
+      }
+      System.out.println(out);
+      return out.toArray(new Event[out.size()]);
+    }
+
+    public Event[] checkCollision(Event e, Event[] eL) {
+      ArrayList<Event> eList = new ArrayList<>(Arrays.asList(eL));
+      ArrayList<Event> out = new ArrayList<Event>();
+      while (true) {
+        System.out.print(eList.get(getNextEventIndex(e)));
+        if (eList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
+          out.add(eList.get(getNextEventIndex(e)));
+          eList.remove(getNextEventIndex(e));
+          System.out.println(", intersects");
+        } else {
+          System.out.println(", doesn't");
+          break;
+        }
+      }
+      for (int i = 0; i < getNextEventIndex(e); i++) {
+        if (eList.get(i).compareTo(e, Event.END_DATE, Event.START_DATE) == -1) {
+          out.add(eList.get(i));
+        }
+      }
+      System.out.println(out);
+      return out.toArray(new Event[out.size()]);
+    }
+
     public Event[] getEventList() {
         return eventList.toArray(new Event[eventList.size()]);
     }
@@ -71,6 +115,20 @@ public class Schedule {
     private int getNextEventIndex() {
         int currentInterval = eventList.size() - 1;
         Event rn = new Event();
+        while (currentInterval > 0) {
+            if (rn.compareTo(eventList.get(currentInterval)) == -1) {
+                currentInterval = currentInterval + (eventList.size() - 1 - currentInterval)/2;
+            } else if (rn.compareTo(eventList.get(currentInterval)) == 1 && rn.compareTo(eventList.get(currentInterval - 1)) == 1) {
+                currentInterval /= 2;
+            } else {
+                return currentInterval;
+            }
+        }
+        return -1;
+    }
+
+    private int getNextEventIndex(Event rn) {
+        int currentInterval = eventList.size() - 1;
         while (currentInterval > 0) {
             if (rn.compareTo(eventList.get(currentInterval)) == -1) {
                 currentInterval = currentInterval + (eventList.size() - 1 - currentInterval)/2;

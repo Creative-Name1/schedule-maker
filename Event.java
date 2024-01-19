@@ -14,16 +14,16 @@ public class Event implements Comparable {
     public Event() {
         this(new Date(), new Date(), "Leisure", "Play video games");
     }
-    public Event(int startH, int startM, int startS, int duraH, int duraM, int duraS) {
-        this(startH, startM, startS, duraH, duraM, duraS, "Not specified", "Unnamed Event", Calendar.getInstance());
+    public Event(int startH, int startM, int startS, int endH, int endM, int endS) {
+        this(startH, startM, startS, endH, endM, endS, "Not specified", "Unnamed Event", Calendar.getInstance());
     }
-    public Event(int startH, int startM, int startS, int duraH, int duraM, int duraS, String n) {
-        this(startH, startM, startS, duraH, duraM, duraS, "Not specified", n, Calendar.getInstance());
+    public Event(int startH, int startM, int startS, int endH, int endM, int endS, String n) {
+        this(startH, startM, startS, endH, endM, endS, "Not specified", n, Calendar.getInstance());
     }
-    public Event(int startH, int startM, int startS, int duraH, int duraM, int duraS, String t, String n) {
-        this(startH, startM, startS, duraH, duraM, duraS, t, n, Calendar.getInstance());
+    public Event(int startH, int startM, int startS, int endH, int endM, int endS, String t, String n) {
+        this(startH, startM, startS, endH, endM, endS, t, n, Calendar.getInstance());
     }
-    public Event(int startH, int startM, int startS, int duraH, int duraM, int duraS, String t, String n, Calendar c) {
+    public Event(int startH, int startM, int startS, int endH, int endM, int endS, String t, String n, Calendar c) {
         this(
                 new Date(
                         c.get(Calendar.YEAR), c.get(Calendar.MONTH),
@@ -31,7 +31,7 @@ public class Event implements Comparable {
                 ), new Date(
                         c.get(Calendar.YEAR), c.get(Calendar.MONTH),
                         c.get(Calendar.DAY_OF_MONTH),
-                        startH + duraH, startM + duraM, startS + duraS
+                        endH, endM, endS
                 ), t, n
         );
     }
@@ -46,7 +46,7 @@ public class Event implements Comparable {
 
     // For testing purposes
     public Event(int startH, int startM, int startS) {
-        this(startH, startM, startS, 0, 0, 0, "Not specified", "Unnamed Event", Calendar.getInstance());
+        this(startH, startM, startS, startH, startM, startS, "Not specified", "Unnamed Event", Calendar.getInstance());
     }
 
 
@@ -160,16 +160,17 @@ public class Event implements Comparable {
           }
           if (obj1 == 0) {
             h2 = this.getStartHour();
-            s2 = this.getStartMinute();
-            m2 = this.getStartSecond();
+            m2 = this.getStartMinute();
+            s2 = this.getStartSecond();
           } else {
             h2 = this.getEndHour();
-            s2 = this.getEndMinute();
-            m2 = this.getEndSecond();
+            m2 = this.getEndMinute();
+            s2 = this.getEndSecond();
           }
 
             // compares o starting hour to this, if they equal, compares start minute, if those equal, compares start second.
             if (h1 > h2) {
+                System.out.println(h1 + ", " + h2);
                 return 1;
             } else if (h1 < h2) {
                 return -1;
