@@ -5,6 +5,14 @@ import java.util.Objects;
 public class Event implements Comparable {
     private Date time;
     private Date end;
+    private final String[] VALID_TYPES = new String[] {
+      "Work",
+      "Leisure",
+      "Break",
+      "Excercise",
+      "Personal Project",
+      "Break_Special"
+    };
     private String type;
     private String name;
     public static final int START_DATE = 0;
@@ -38,8 +46,15 @@ public class Event implements Comparable {
     public Event(Date d, Date e, String t, String n) {
         time = d;
         end = e;
-        type = t;
         name = n;
+        for (int i = 0; i < VALID_TYPES.length; i++) {
+          if (t.equals(VALID_TYPES[i])) {
+            type = t;
+            break;
+          } else if (i == VALID_TYPES.length - 1) {
+            type = "Not Specified";
+          }
+        }
     }
 
 

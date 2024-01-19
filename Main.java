@@ -23,6 +23,8 @@ public class Main {
         Schedule s = new Schedule(eList);
         Event[] currentSchedule = s.getEventList();
 
+        s.applyPreset();
+
         System.out.println(s);
       
         System.out.println(s.getNextEvent());

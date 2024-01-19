@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 
 public class Schedule {
     private ArrayList<Event> eventList;
@@ -22,7 +23,6 @@ public class Schedule {
         int smallest = 0;
         Event emptyGlass = new Event(); // reference to BroCode tutorial just 'cause
 
-        // for loop for
         for (int startElem = 0; startElem < temp.length - 1; startElem++) {
             smallest = startElem;
             for (int currentElem = startElem + 1; currentElem < temp.length; currentElem++) {
@@ -40,9 +40,8 @@ public class Schedule {
     private static Event[] dateSort(Event[] e) {
         Event[] temp = e;
         int smallest = 0;
-        Event emptyGlass = new Event(); // reference to BroCode tutorial just 'cause
+        Event emptyGlass = new Event();
 
-        // for loop for
         for (int startElem = 0; startElem < temp.length - 1; startElem++) {
             smallest = startElem;
             for (int currentElem = startElem + 1; currentElem < temp.length; currentElem++) {
@@ -65,6 +64,29 @@ public class Schedule {
       }
     }
 
+    public void applyPreset() {
+      Date a = new Date();
+      Date b = new Date();
+      ArrayList<Event> out = new ArrayList<Event>();
+      for (int i = 0; i < eventList.size() - 1; i++) {
+        if (! eventList.get(i).getType().equals(eventList.get(i+1).getType())) {
+          if (! checkCollision(eventList.get(i))) {
+            a = eventList.get(i).getStartDate();
+            b = a;
+            if (a.getMinutes() > 9) {
+              a.setMinutes(a.getMinutes() - 10);
+            } else {
+              a.setHours(a.getHours() - 1);
+              a.setMinutes(a.getMinutes() + 50);
+            }
+            out.add(new Event(a, b, "Break_Special", "Transition"));
+          }
+        }
+      }
+      eventList.addAll(out);
+      eventList = new ArrayList<>(Arrays.asList(dateSort(eventList)));
+    }
+
     public Event[] checkCollision(Event e, ArrayList<Event> eL) {
       ArrayList<Event> eList = new ArrayList<> (eL);
       ArrayList<Event> out = new ArrayList<Event>();
@@ -83,6 +105,17 @@ public class Schedule {
       }
       System.out.println(out);
       return out.toArray(new Event[out.size()]);
+    }
+
+    public boolean checkCollision(Event e) {
+      if (eventList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
+        return true;
+      } else {
+        if (eventList.get(getNextEventIndex(e) - 2).compareTo(e, Event.END_DATE, Event.START_DATE) == -1) {
+          return true;
+        }
+      }
+      return false;
     }
 
     public Event[] checkCollision(Event e, Event[] eL) {
