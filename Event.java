@@ -1,6 +1,8 @@
+import java.io.FileWriter;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.Objects;
+import java.io.*;
 
 public class Event implements Comparable {
     private Date time;
@@ -67,7 +69,48 @@ public class Event implements Comparable {
 
 
 
+    public void writeToFile() {
+        try {
+            FileWriter fw = new FileWriter("Schedule.txt", true);
+            PrintWriter pw = new PrintWriter(fw);
+            pw.println(name + "~" + type + "~" + time.getHours() + "~" + time.getMinutes() + "~" + time.getSeconds() + "~" + end.getHours() + "~" + end.getMinutes() + "~" + end.getSeconds());
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+    }
 
+    public void writeFromString(String str) {
+        name = substringFinder(1, str);
+        this.setType(substringFinder(2, str));
+        time.setHours(Integer.parseInt(substringFinder(3, str)));
+        time.setMinutes(Integer.parseInt(substringFinder(4, str)));
+        time.setSeconds(Integer.parseInt(substringFinder(5, str)));
+        end.setHours(Integer.parseInt(substringFinder(6, str)));
+        end.setMinutes(Integer.parseInt(substringFinder(7, str)));
+        end.setSeconds(Integer.parseInt(substringFinder(8, str)));
+    }
+
+
+    // stolen from my own 2.3 excercises
+    private static boolean validChar(char chr) {
+        return ! (chr == '~');
+    }
+
+    private static String substringFinder(int which, String str) {
+        str += " ";
+        int index1 = 0;
+        int index2 = 0;
+        for (int i = 1; i <= which; i++) {
+            index1 = index2;
+            for (int j = index1; ! validChar(str.charAt(j)); j++) {
+                index1 = j + 1;
+            }
+            for (int j = index1; validChar(str.charAt(j)); j++) {
+                index2 = j + 1;
+            }
+        }
+        return str.substring(index1, index2);
+    }
 
     // getters
     public Date getStartDate() {

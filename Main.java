@@ -72,16 +72,16 @@ public class Main {
                             if (! (userChoice == -1)){
                                 tempEvent.setType(EVENT_TYPE_MENU[userChoice]);
 
-                                System.out.println("Enter event name:");
-                                tempEvent.setName(scanner.nextLine());
+                                System.out.println("Enter event name (do not use tilde (~)!):");
+                                tempEvent.setName((scanner.nextLine()).replaceAll("~", "-")); // for file reading purposes cannot be '~'
                                 System.out.println("\n\n");
 
                                 tempEvent.setStartHour(intChoice("Enter event starting hour:", -1, 24));
-                                tempEvent.setStartMinute(intChoice("Enter event starting minute:", -1, 24));
-                                tempEvent.setStartSecond(intChoice("Enter event starting second:", -1, 24));
+                                tempEvent.setStartMinute(intChoice("Enter event starting minute:", -1, 60));
+                                tempEvent.setStartSecond(intChoice("Enter event starting second:", -1, 60));
                                 tempEvent.setEndHour(intChoice("Enter event ending hour:", -1, 24));
-                                tempEvent.setEndMinute(intChoice("Enter event ending minute:", -1, 24));
-                                tempEvent.setEndSecond(intChoice("Enter event ending second:", -1, 24));
+                                tempEvent.setEndMinute(intChoice("Enter event ending minute:", -1, 60));
+                                tempEvent.setEndSecond(intChoice("Enter event ending second:", -1, 60));
                             }
 
                             schedule.addEvent(tempEvent);
@@ -97,7 +97,7 @@ public class Main {
                             userChoice = choice(FINAL_MENU, "No");
 
                             if (userChoice == 0) {
-
+                                // yep
                             }
                         }
                     }
@@ -163,8 +163,4 @@ public class Main {
         }
     }
 
-    public static void clearScreen() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
-    }
 }

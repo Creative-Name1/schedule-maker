@@ -217,6 +217,10 @@ public class Schedule {
         return out.toArray(new Event[out.size()]);
     }
 
+    public void writeToFile() {
+        
+    }
+
     public Event[] getEventList() {
         return eventList.toArray(new Event[eventList.size()]);
     }
