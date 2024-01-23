@@ -257,7 +257,7 @@ public class Schedule {
         return eventList.toArray(new Event[eventList.size()]);
     }
 
-    private int getNextEventIndex() {
+    public int getNextEventIndex() {
         int currentInterval = eventList.size() - 1;
         Event rn = new Event();
         while (currentInterval > 0) {
@@ -293,6 +293,8 @@ public class Schedule {
                 currentInterval = currentInterval + (eventList.size() - 1 - currentInterval) / 2;
             } else if (rn.compareTo(eventList.get(currentInterval)) == 1 && rn.compareTo(eventList.get(currentInterval - 1)) == 1) {
                 currentInterval /= 2;
+            } else if (rn.compareTo(eventList.get(currentInterval)) == -1){
+                return currentInterval + 1;
             } else {
                 return currentInterval;
             }
@@ -311,6 +313,22 @@ public class Schedule {
                 throw new RuntimeException(e);
             }
         }
+    }
+    public Event getCurrentEvent() {
+        int temp = getNextEventIndex() - 1;
+        if (temp > -1) {
+            return eventList.get(temp);
+        } else {
+            try {
+                throw new Exception("You just finished your last task.");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public int getSize() {
+        return eventList.size();
     }
 
     public void addEvent(Event e) {

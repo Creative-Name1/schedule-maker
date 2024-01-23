@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -39,7 +40,31 @@ public class Main {
         }
 
         if (inSchedule) { // if there is a schedule already
-            // main(new String[1]); // reruns itself to go into "timer mode"
+            Event currentEvent;
+            Event nextEvent;
+            Date d;
+            schedule.readFromFile();
+            while (schedule.getNextEventIndex() < schedule.getSize()) {
+                clearScreen();
+                d = new Date();
+                currentEvent = schedule.getCurrentEvent();
+                nextEvent = schedule.getNextEvent();
+                System.out.println("Current time: " + d.getHours() + "h " + d.getMinutes() + "m " + d.getSeconds() + "s");
+                System.out.println(
+                        "\nCurrent Task: " + currentEvent.getName() +
+                        "\nType: " + currentEvent.getType() +
+                        "\nTime left: " +
+                        (currentEvent.getEndHour() - d.getHours()) + "h " +
+                        (currentEvent.getEndMinute() - d.getMinutes()) + "m " +
+                        (currentEvent.getEndMinute() - d.getSeconds()) + "s\n"
+                );
+                System.out.println(
+                        "Next Task: " + nextEvent.getName() + ", starts at " +
+                        nextEvent.getStartHour() + "h " +
+                        nextEvent.getStartMinute() + "m " +
+                        nextEvent.getStartSecond() + "s"
+                );
+            }
         }
 
 
@@ -97,7 +122,8 @@ public class Main {
                             userChoice = choice(FINAL_MENU, "No");
 
                             if (userChoice == 0) {
-                                // yep
+                                schedule.writeToFile();
+                                main(new String[0]); // program recurses itself with the newly made schedule to go into "Timer mode"
                             }
                         }
                     }
@@ -125,6 +151,14 @@ public class Main {
                 scanner.nextLine();
                 System.out.println("Input must be an integer!");
             }
+        }
+    }
+
+    public static void clearScreen() {
+        try {
+            Runtime.getRuntime().exec("cls"); // assuming that you are runnning the program on windows
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

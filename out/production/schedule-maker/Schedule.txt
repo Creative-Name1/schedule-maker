@@ -1,2 +1,3 @@
 not-in-schedule
 
+Name~Type~12~12~12~12~12~12
