@@ -1,3 +1,9 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -218,7 +224,33 @@ public class Schedule {
     }
 
     public void writeToFile() {
-        
+        try {
+            FileWriter fw = new FileWriter("Schedule.txt");
+            PrintWriter pw = new PrintWriter(fw);
+            pw.println("in-schedule\n");
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+        for (int i = 0; i < eventList.size(); i++) {
+            eventList.get(i).writeToFile();
+        }
+    }
+
+    public void readFromFile() {
+        String[] all = new String[0];
+        Event e = new Event();
+        if (eventList.isEmpty()) {
+            try {
+                all = Files.readAllLines(Paths.get("file.txt")).toArray(new String[Files.readAllLines(Paths.get("file.txt")).size()]);
+            } catch (IOException ioe) {
+                System.err.println(ioe);
+            }
+
+            for (int i = 2; i < all.length; i++) {
+                e.writeFromString(all[i]);
+                eventList.add(e);
+            }
+        }
     }
 
     public Event[] getEventList() {
