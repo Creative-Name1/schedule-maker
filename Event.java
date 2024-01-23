@@ -118,6 +118,30 @@ public class Event implements Comparable {
         end.setSeconds(n);
     }
 
+    public void setStartHour(int n) {
+        time.setHours(n);
+    }
+    public void setStartMinute(int n) {
+        time.setMinutes(n);
+    }
+    public void setStartSecond(int n) {
+        time.setSeconds(n);
+    }
+
+    public void setType(String s) {
+        if (s != "Break_Special") {
+            for (int i = 0; i < VALID_TYPES.length; i++) {
+                if (s.equals(VALID_TYPES[i])) {
+                    type = s;
+                    break;
+                }
+            }
+        }
+    }
+    public void setName(String s) {
+        name = s;
+    }
+
     // misc
     public String toString() {
         return (

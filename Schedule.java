@@ -16,7 +16,7 @@ public class Schedule {
         removeCollisions();
         checkCollision(new Event(7, 3, 14, 8, 28, 50), eList);
     }
-  
+
     private static Event[] dateSort(ArrayList<Event> e) {
         Event[] temp = new Event[e.size()];
         temp = e.toArray(temp);
@@ -55,78 +55,112 @@ public class Schedule {
         }
         return temp;
     }
-  
+
     private void removeCollisions() {
-      for (int i = 0; i < eventList.size() - 1; i++) {
-        if (eventList.get(i).compareTo(eventList.get(i + 1), Event.END_DATE, Event.START_DATE) == -1) {
-          eventList.get(i).setEndDate(eventList.get(i + 1).getStartDate());
+        for (int i = 0; i < eventList.size() - 1; i++) {
+            if (eventList.get(i).compareTo(eventList.get(i + 1), Event.END_DATE, Event.START_DATE) == -1) {
+                eventList.get(i).setEndDate(eventList.get(i + 1).getStartDate());
+            }
         }
-      }
     }
 
     public void applyPreset() {
         Event e = new Event();
-      Date a = new Date();
-      Date b = new Date();
-      ArrayList<Event> out = new ArrayList<Event>();
-      for (int i = 0; i < eventList.size() - 1; i++) {
-        if (! eventList.get(i).getType().equals(eventList.get(i+1).getType())) {
-          if (! checkCollision(eventList.get(i))) {
-            a = eventList.get(i).getStartDate();
-            b = a;
-            if (a.getMinutes() > 9) {
-              a.setMinutes(a.getMinutes() - 10);
-            } else {
-              a.setHours(a.getHours() - 1);
-              a.setMinutes(a.getMinutes() + 50);
+        Date a = new Date();
+        Date b = new Date();
+        ArrayList<Event> out = new ArrayList<Event>();
+        for (int i = 0; i < eventList.size() - 1; i++) {
+            if (!eventList.get(i).getType().equals(eventList.get(i + 1).getType())) {
+                if (!checkCollision(eventList.get(i))) {
+                    a = eventList.get(i).getStartDate();
+                    b = a;
+                    if (a.getMinutes() > 9) {
+                        a.setMinutes(a.getMinutes() - 10);
+                    } else {
+                        a.setHours(a.getHours() - 1);
+                        a.setMinutes(a.getMinutes() + 50);
+                    }
+                    out.add(new Event(a, b, "Break_Special", "Transition"));
+                }
             }
-            out.add(new Event(a, b, "Break_Special", "Transition"));
-          }
         }
-      }
-      eventList.addAll(out);
-      eventList = new ArrayList<>(Arrays.asList(dateSort(eventList)));
+        eventList.addAll(out);
+        eventList = new ArrayList<>(Arrays.asList(dateSort(eventList)));
 
-      while (true) {
-          for (int i = 0; i < eventList.size(); i++) {
-              e = eventList.get(i);
-              if (e.getEndMinute() < 30) {
-                  e.setEndMinute(e.getEndMinute() + 30);
-              } else {
-                  e.setEndHour(e.getEndHour() + 1);
-                  e.setEndMinute(e.getEndMinute() - 30);
-              }
-              if (checkCollision(e)) {
-                  if (checkCollisionSpecial(eventList.get(i)).getType().equals("Break_Special")) {
-                      eventList.remove()
-                  }
-              }
-          }
-      }
+        while (true) {
+            for (int i = 0; i < eventList.size(); i++) {
+                out = new ArrayList<Event>();
+                e = eventList.get(i);
+                if (e.getEndMinute() < 30) {
+                    e.setEndMinute(e.getEndMinute() + 30);
+                } else {
+                    e.setEndHour(e.getEndHour() + 1);
+                    e.setEndMinute(e.getEndMinute() - 30);
+                }
+                if (checkCollision(e)) {
+                    if (checkCollisionSpecial(eventList.get(i)).getType().equals("Break_Special")) {
+                        eventList.remove(getEventIndex(checkCollisionSpecial(eventList.get(i))));
+                    }
+                } else {
+                    e.setType("Work");
+                    if (e.getEndMinute() > 5) {
+                        e.setEndMinute(e.getEndMinute() - 5);
+                    } else {
+                        e.setEndHour(e.getEndHour() - 1);
+                        e.setEndMinute(e.getEndMinute() + 55);
+                    }
+                    out.add(e);
+                    e.setStartSecond(e.getEndSecond());
+                    e.setStartMinute(e.getEndMinute());
+                    e.setStartHour(e.getEndHour());
+                    if (e.getEndMinute() < 55) {
+                        e.setEndMinute(e.getEndMinute() + 5);
+                    } else {
+                        e.setEndHour(e.getEndHour() + 1);
+                        e.setEndMinute(e.getEndMinute() - 55);
+                    }
+                    out.add(e);
+                }
+            }
+            if (out.size() == 0) {
+                break;
+            }
+            eventList.addAll(out);
+            eventList = new ArrayList<>(Arrays.asList(dateSort(eventList)));
+        }
+
+        out = new ArrayList<Event>();
+        for (int i = 0; i < eventList.size() - 1; i++) {
+            if (eventList.get(i).compareTo(eventList.get(i + 1), Event.END_DATE, Event.START_DATE) == 1) {
+                out.add(new Event(eventList.get(i).getStartDate(), eventList.get(i + 1).getEndDate(), "Transition into next activity", "Break_Special"));
+            }
+        }
+        eventList.addAll(out);
+        eventList = new ArrayList<>(Arrays.asList(dateSort(eventList)));
     }
 
     public Event[] checkCollision(Event e, ArrayList<Event> eL) {
-      ArrayList<Event> eList = new ArrayList<> (eL);
-      ArrayList<Event> out = new ArrayList<Event>();
-      while (true) {
-        if (eList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
-          out.add(eList.get(getNextEventIndex(e)));
-          eList.remove(getNextEventIndex(e));
-        } else {
-          break;
+        ArrayList<Event> eList = new ArrayList<>(eL);
+        ArrayList<Event> out = new ArrayList<Event>();
+        while (true) {
+            if (eList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
+                out.add(eList.get(getNextEventIndex(e)));
+                eList.remove(getNextEventIndex(e));
+            } else {
+                break;
+            }
         }
-      }
-      for (int i = 0; i < getNextEventIndex(e); i++) {
-        if (eList.get(i).compareTo(e, Event.END_DATE, Event.START_DATE) == -1) {
-          out.add(eList.get(i));
+        for (int i = 0; i < getNextEventIndex(e); i++) {
+            if (eList.get(i).compareTo(e, Event.END_DATE, Event.START_DATE) == -1) {
+                out.add(eList.get(i));
+            }
         }
-      }
-      System.out.println(out);
-      return out.toArray(new Event[out.size()]);
+        System.out.println(out);
+        return out.toArray(new Event[out.size()]);
     }
 
     public Event checkCollisionSpecial(Event e) {
-        ArrayList<Event> eList = new ArrayList<> (eventList);
+        ArrayList<Event> eList = new ArrayList<>(eventList);
         ArrayList<Event> out = new ArrayList<Event>();
         while (true) {
             if (eList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
@@ -150,37 +184,37 @@ public class Schedule {
     }
 
     public boolean checkCollision(Event e) {
-      if (eventList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
-        return true;
-      } else {
-        if (eventList.get(getNextEventIndex(e) - 2).compareTo(e, Event.END_DATE, Event.START_DATE) == -1) {
-          return true;
+        if (eventList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
+            return true;
+        } else {
+            if (eventList.get(getNextEventIndex(e) - 2).compareTo(e, Event.END_DATE, Event.START_DATE) == -1) {
+                return true;
+            }
         }
-      }
-      return false;
+        return false;
     }
 
     public Event[] checkCollision(Event e, Event[] eL) {
-      ArrayList<Event> eList = new ArrayList<>(Arrays.asList(eL));
-      ArrayList<Event> out = new ArrayList<Event>();
-      while (true) {
-        System.out.print(eList.get(getNextEventIndex(e)));
-        if (eList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
-          out.add(eList.get(getNextEventIndex(e)));
-          eList.remove(getNextEventIndex(e));
-          System.out.println(", intersects");
-        } else {
-          System.out.println(", doesn't");
-          break;
+        ArrayList<Event> eList = new ArrayList<>(Arrays.asList(eL));
+        ArrayList<Event> out = new ArrayList<Event>();
+        while (true) {
+            System.out.print(eList.get(getNextEventIndex(e)));
+            if (eList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
+                out.add(eList.get(getNextEventIndex(e)));
+                eList.remove(getNextEventIndex(e));
+                System.out.println(", intersects");
+            } else {
+                System.out.println(", doesn't");
+                break;
+            }
         }
-      }
-      for (int i = 0; i < getNextEventIndex(e); i++) {
-        if (eList.get(i).compareTo(e, Event.END_DATE, Event.START_DATE) == -1) {
-          out.add(eList.get(i));
+        for (int i = 0; i < getNextEventIndex(e); i++) {
+            if (eList.get(i).compareTo(e, Event.END_DATE, Event.START_DATE) == -1) {
+                out.add(eList.get(i));
+            }
         }
-      }
-      System.out.println(out);
-      return out.toArray(new Event[out.size()]);
+        System.out.println(out);
+        return out.toArray(new Event[out.size()]);
     }
 
     public Event[] getEventList() {
@@ -192,7 +226,7 @@ public class Schedule {
         Event rn = new Event();
         while (currentInterval > 0) {
             if (rn.compareTo(eventList.get(currentInterval)) == -1) {
-                currentInterval = currentInterval + (eventList.size() - 1 - currentInterval)/2;
+                currentInterval = currentInterval + (eventList.size() - 1 - currentInterval) / 2;
             } else if (rn.compareTo(eventList.get(currentInterval)) == 1 && rn.compareTo(eventList.get(currentInterval - 1)) == 1) {
                 currentInterval /= 2;
             } else {
@@ -202,7 +236,17 @@ public class Schedule {
         return -1;
     }
 
-    private int getEventIndex(Event e) {
+    private int getEventIndex(Event rn) {
+        int currentInterval = eventList.size() - 1;
+        while (currentInterval > 0) {
+            if (rn.compareTo(eventList.get(currentInterval)) == -1) {
+                currentInterval = currentInterval + (eventList.size() - 1 - currentInterval) / 2;
+            } else if (rn.compareTo(eventList.get(currentInterval)) == 1) {
+                currentInterval /= 2;
+            } else {
+                return currentInterval;
+            }
+        }
         return 0;
     }
 
@@ -210,7 +254,7 @@ public class Schedule {
         int currentInterval = eventList.size() - 1;
         while (currentInterval > 0) {
             if (rn.compareTo(eventList.get(currentInterval)) == -1) {
-                currentInterval = currentInterval + (eventList.size() - 1 - currentInterval)/2;
+                currentInterval = currentInterval + (eventList.size() - 1 - currentInterval) / 2;
             } else if (rn.compareTo(eventList.get(currentInterval)) == 1 && rn.compareTo(eventList.get(currentInterval - 1)) == 1) {
                 currentInterval /= 2;
             } else {
@@ -233,13 +277,18 @@ public class Schedule {
         }
     }
 
-    public String toString() {
-      String out = "Schedule:\n";
+    public void addEvent(Event e) {
+        eventList.add(e);
+        eventList = new ArrayList<>(Arrays.asList(dateSort(eventList)));
+    }
 
-      for (int i = 0; i < eventList.size(); i++) {
-        out += eventList.get(i) + "\n";
-      }
-      
-      return out;
+    public String toString() {
+        String out = "Current schedule:\n";
+
+        for (int i = 0; i < eventList.size(); i++) {
+            out += eventList.get(i) + "\n";
+        }
+
+        return out;
     }
 }
