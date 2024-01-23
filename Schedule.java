@@ -4,10 +4,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 public class Schedule {
     private ArrayList<Event> eventList;
@@ -138,7 +135,7 @@ public class Schedule {
         out = new ArrayList<Event>();
         for (int i = 0; i < eventList.size() - 1; i++) {
             if (eventList.get(i).compareTo(eventList.get(i + 1), Event.END_DATE, Event.START_DATE) == 1) {
-                out.add(new Event(eventList.get(i).getStartDate(), eventList.get(i + 1).getEndDate(), "Transition into next activity", "Break_Special"));
+                out.add(new Event(eventList.get(i).getStartDate(), eventList.get(i + 1).getEndDate(), "Break_Special", "Transition into next activity"));
             }
         }
         eventList.addAll(out);
@@ -168,23 +165,27 @@ public class Schedule {
     public Event checkCollisionSpecial(Event e) {
         ArrayList<Event> eList = new ArrayList<>(eventList);
         ArrayList<Event> out = new ArrayList<Event>();
-        while (true) {
-            if (eList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
-                out.add(eList.get(getNextEventIndex(e)));
-                eList.remove(getNextEventIndex(e));
-            } else {
-                break;
+        try {
+            while (true) {
+                if (eList.get(getNextEventIndex(e)).compareTo(e, Event.START_DATE, Event.END_DATE) == 1) {
+                    out.add(eList.get(getNextEventIndex(e)));
+                    eList.remove(getNextEventIndex(e));
+                } else {
+                    break;
+                }
             }
-        }
-        for (int i = 0; i < getNextEventIndex(e); i++) {
-            if (eList.get(i).compareTo(e, Event.END_DATE, Event.START_DATE) == -1) {
-                out.add(eList.get(i));
+            for (int i = 0; i < getNextEventIndex(e); i++) {
+                if (eList.get(i).compareTo(e, Event.END_DATE, Event.START_DATE) == -1) {
+                    out.add(eList.get(i));
+                }
             }
-        }
-        for (int i = 0; i < out.size(); i++) {
-            if (out.get(i).getType().equals("Break_Special")) {
-                return out.get(i);
+            for (int i = 0; i < out.size(); i++) {
+                if (out.get(i).getType().equals("Break_Special")) {
+                    return out.get(i);
+                }
             }
+        } catch (Exception ex) {
+            System.out.println("Out of bounds");
         }
         return new Event();
     }
@@ -334,6 +335,10 @@ public class Schedule {
     public void addEvent(Event e) {
         eventList.add(e);
         eventList = new ArrayList<>(Arrays.asList(dateSort(eventList)));
+    }
+
+    public void addEventList(Event[] e) {
+        eventList.addAll(List.of(e));
     }
 
     public String toString() {

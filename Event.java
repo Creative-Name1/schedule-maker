@@ -8,12 +8,13 @@ public class Event implements Comparable {
     private Date time;
     private Date end;
     private final String[] VALID_TYPES = new String[] {
-      "Work",
-      "Leisure",
-      "Break",
-      "Excercise",
-      "Personal Project",
-      "Break_Special"
+            "Work",
+            "Leisure",
+            "Break",
+            "Excercise",
+            "Personal Project",
+            "Transition",
+            "Break_Special"
     };
     private String type;
     private String name;

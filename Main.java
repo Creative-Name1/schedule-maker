@@ -11,6 +11,19 @@ public class Main {
         Event tempEvent;
         Scanner scanner = new Scanner(System.in);
         Schedule schedule = new Schedule(new ArrayList<Event>());
+        Event[] tempSched = new Event[] {
+                new Event(6, 0, 0, 6, 15, 0, "Transition", "Wake up"),
+                new Event(6, 30, 0, 6, 35, 0, "Transition", "Get ready for work"),
+                new Event(7, 30, 0, 7, 50, 0, "Transition", "Leave for work"),
+                new Event(8, 0, 0, 10, 0, 0, "Work", "Work"),
+                new Event(10, 0, 0, 10, 30, 0, "Break", "Break"),
+                new Event(10, 30, 0, 12, 00, 0, "Work", "Keep working"),
+                new Event(13, 30, 0, 13, 45, 0, "Other", "Call corporate"),
+                new Event(15, 0, 0, 15, 30, 0, "Break", "Break"),
+                new Event(18, 0, 0, 18, 20, 0, "Transition", "Drive home"),
+                new Event(21, 0, 0, 21, 0, 0, "Transition", "Go to bed")
+        };
+        schedule.addEventList(tempSched);
 
         // options for ui
         final String[] MAIN_MENU = new String[] {"Make schedule"};
@@ -25,7 +38,8 @@ public class Main {
                 "Leisure",
                 "Break",
                 "Excercise",
-                "Personal Project"
+                "Personal Project",
+                "Transition"
         };
 
         // if there is a schedule active, inSchedule = true
@@ -64,6 +78,14 @@ public class Main {
                         nextEvent.getStartMinute() + "m " +
                         nextEvent.getStartSecond() + "s"
                 );
+            }
+            try {
+                FileWriter fw = new FileWriter("Schedule.txt");
+                PrintWriter pw = new PrintWriter(fw);
+                pw.println("not-in-schedule\n");
+                pw.close();
+            } catch (IOException e) {
+                System.err.println(e);
             }
         }
 
@@ -107,9 +129,19 @@ public class Main {
                                 tempEvent.setEndHour(intChoice("Enter event ending hour:", -1, 24));
                                 tempEvent.setEndMinute(intChoice("Enter event ending minute:", -1, 60));
                                 tempEvent.setEndSecond(intChoice("Enter event ending second:", -1, 60));
-                            }
 
-                            schedule.addEvent(tempEvent);
+
+                                schedule.addEvent(tempEvent);
+
+                                if (tempEvent.compareTo(tempEvent, Event.START_DATE, Event.END_DATE) == -1) {
+                                    if (tempEvent.getEndHour() < 12) {
+                                        tempEvent.setEndHour(tempEvent.getEndHour() + 12);
+                                    } else {
+                                        System.out.println("End date cannot be less than Starting date!\n(Press enter to continue)");
+                                        scanner.nextLine();
+                                    }
+                                }
+                            }
                         }
 
                         else if (userChoice == 1) {
