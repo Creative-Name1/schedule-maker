@@ -1,4 +1,5 @@
 import java.io.FileWriter;
+import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.Objects;
@@ -60,11 +61,11 @@ public class Event implements Comparable {
         }
     }
 
-
-
-    // For testing purposes
-    public Event(int startH, int startM, int startS) {
-        this(startH, startM, startS, startH, startM, startS, "Not specified", "Unnamed Event", Calendar.getInstance());
+    public Event(Event e) { // for deep copy
+        time = e.getStartDate();
+        end = e.getEndDate();
+        name = e.getName();
+        type = e.getType();
     }
 
 
@@ -153,32 +154,49 @@ public class Event implements Comparable {
       end = new Date(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), h, m, s);
     }
     public void setEndHour(int n) {
-        end.setHours(n);
+        Calendar c = Calendar.getInstance();
+        c.setTime(end);
+        c.set(Calendar.HOUR, n);
+        end = c.getTime();
     }
     public void setEndMinute(int n) {
-        end.setMinutes(n);
+        Calendar c = Calendar.getInstance();
+        c.setTime(end);
+        c.set(Calendar.MINUTE, n);
+        end = c.getTime();
     }
     public void setEndSecond(int n) {
-        end.setSeconds(n);
+        Calendar c = Calendar.getInstance();
+        c.setTime(end);
+        c.set(Calendar.SECOND, n);
+        end = c.getTime();
     }
 
     public void setStartHour(int n) {
-        time.setHours(n);
+        Calendar c = Calendar.getInstance();
+        c.setTime(time);
+        c.set(Calendar.HOUR, n);
+        time = c.getTime();
     }
     public void setStartMinute(int n) {
-        time.setMinutes(n);
+        Calendar c = Calendar.getInstance();
+        c.setTime(time);
+        c.set(Calendar.MINUTE, n);
+        time = c.getTime();
     }
     public void setStartSecond(int n) {
-        time.setSeconds(n);
+        Calendar c = Calendar.getInstance();
+        c.setTime(time);
+        c.set(Calendar.SECOND, n);
+        time = c.getTime();
     }
+    public void setStartDate(Date d) {time = d;}
 
     public void setType(String s) {
-        if (s != "Break_Special") {
-            for (int i = 0; i < VALID_TYPES.length; i++) {
-                if (s.equals(VALID_TYPES[i])) {
-                    type = s;
-                    break;
-                }
+        for (int i = 0; i < VALID_TYPES.length; i++) {
+            if (s.equals(VALID_TYPES[i])) {
+                type = s;
+                break;
             }
         }
     }
@@ -234,6 +252,19 @@ public class Event implements Comparable {
         }
     }
 
+    public boolean collidesWith(Event e) {
+        if (this.compareTo(e) != -1) {
+            if (this.compareTo(e, END_DATE, START_DATE) != -1) {
+                return false;
+            }
+        } else if (this.compareTo(e, START_DATE, END_DATE) != 1) {
+            if (this.compareTo(e, END_DATE, END_DATE) != 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean equals(Object o) {
         if (o instanceof Event) {
             Event e = (Event) o;
@@ -280,7 +311,6 @@ public class Event implements Comparable {
 
             // compares o starting hour to this, if they equal, compares start minute, if those equal, compares start second.
             if (h1 > h2) {
-                System.out.println(h1 + ", " + h2);
                 return 1;
             } else if (h1 < h2) {
                 return -1;
