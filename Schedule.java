@@ -61,7 +61,7 @@ public class Schedule {
     public void removeCollisions() {
         for (int i = 0; i < eventList.size() - 1; i++) {
             if (eventList.get(i).compareTo(eventList.get(i + 1), Event.END_DATE, Event.START_DATE) == -1) {
-                eventList.get(i).setEndDate(eventList.get(i + 1).getStartDate());
+                eventList.get(i).setEndTime(eventList.get(i + 1).getStartTime());
             }
         }
     }
@@ -73,24 +73,73 @@ public class Schedule {
         for (int i = 0; i < eventList.size() - 1; i++) {
             if (! (eventList.get(i).getType().equals(eventList.get(i + 1).getType()))) {
                 e = new Event(eventList.get(i + 1));
-                e.setEndDate(e.getStartDate());
-                System.out.println(e.getStartHour());
+                e.setEndTime(e.getStartTime());
                 if (e.getEndMinute() > 9) {
                     e.setStartMinute(e.getEndMinute() - 10);
                 } else {
                     e.setStartHour(e.getEndHour() - 1);
                     e.setStartMinute(e.getStartMinute() + 50);
                 }
-                System.out.println(e.getStartHour());
                 if (! checkCollision(e)) {
                     e.setType("Break_Special");
-                    e.setName("OOGA BOOGA");
+                    e.setName("Transition into next activity");
                     out.add(e);
                 }
             }
         }
         eventList.addAll(out);
         eventList = new ArrayList<>(Arrays.asList(dateSort(eventList)));
+
+        while (true) {
+            out = new ArrayList<Event>(); // empties "out" list
+
+            for (int i = 0; i < eventList.size() - 1; i++) {
+                // for loop goes through the whole eventlist minus the ending thing
+
+                e = new Event(eventList.get(i));
+                if (e.getEndMinute() < 30) {
+                    e.setEndMinute(e.getEndMinute() + 30);
+                } else {
+                    e.setEndHour(e.getEndHour() + 1);
+                    e.setEndMinute(e.getEndMinute() - 30);
+                }
+                if (checkCollision(e)) {
+                    if (checkCollisionSpecial(eventList.get(i)).getType().equals("Break_Special")) {
+                        System.out.println(checkCollisionSpecial(eventList.get(i)));
+                        eventList.remove(getEventIndex(checkCollisionSpecial(eventList.get(i))));
+                    }
+                } else {
+                    e.setName("Work on something!");
+                    e.setType("Work");
+                    if (e.getEndMinute() > 5) {
+                        e.setEndMinute(e.getEndMinute() - 5);
+                    } else {
+                        e.setEndHour(e.getEndHour() - 1);
+                        e.setEndMinute(e.getEndMinute() + 55);
+                    }
+                    out.add(e);
+                    e = new Event(e);
+                    e.setName("Have a 5 minute break");
+                    e.setType("Break");
+                    e.setStartSecond(e.getEndSecond());
+                    e.setStartMinute(e.getEndMinute());
+                    e.setStartHour(e.getEndHour());
+                    if (e.getEndMinute() < 55) {
+                        e.setEndMinute(e.getEndMinute() + 5);
+                    } else {
+                        e.setEndHour(e.getEndHour() + 1);
+                        e.setEndMinute(e.getEndMinute() - 55);
+                    }
+                    out.add(e);
+                }
+            }
+            if (out.size() == 0) {
+                break;
+            }
+            eventList.addAll(out);
+            eventList = new ArrayList<>(Arrays.asList(dateSort(eventList)));
+            System.out.println(this);
+        }
     }
 
     private boolean checkCollision(Event e) {
@@ -119,7 +168,7 @@ public class Schedule {
                 }
             }
             for (int i = 0; i < out.size(); i++) {
-                if (out.get(i).getType().equals("Break_Special")) {
+                if (out.get(i).getType().equals("Break_Special") && ! out.get(i).equals(e)) {
                     return out.get(i);
                 }
             }
@@ -184,6 +233,23 @@ public class Schedule {
                 currentInterval /= 2;
             } else {
                 return currentInterval;
+            }
+        }
+        return -1;
+    }
+
+    public int getEventIndex(Event e) {
+        int currentInterval = eventList.size() - 1;
+        while (currentInterval > 0) {
+            if (e.compareTo(eventList.get(currentInterval)) == 1) {
+                currentInterval = currentInterval + (eventList.size() - 1 - currentInterval) / 2;
+            } else if (e.compareTo(eventList.get(currentInterval)) == -1) {
+                currentInterval /= 2;
+            } else {
+                if (e.equals(eventList.get(currentInterval))) {
+                    return currentInterval;
+                }
+                return -1;
             }
         }
         return -1;

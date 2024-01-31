@@ -1,3 +1,11 @@
 Main class:
 
 checks if there's a specific line in text file saying
+
+
+collision function:
+
+checks every item in list, like so:
+
+if item ends after passed in starts:
+    if item starts before passed in ends:
