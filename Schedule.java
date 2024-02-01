@@ -89,57 +89,6 @@ public class Schedule {
         }
         eventList.addAll(out);
         eventList = new ArrayList<>(Arrays.asList(dateSort(eventList)));
-
-        while (true) {
-            out = new ArrayList<Event>(); // empties "out" list
-
-            for (int i = 0; i < eventList.size() - 1; i++) {
-                // for loop goes through the whole eventlist minus the ending thing
-
-                e = new Event(eventList.get(i));
-                if (e.getEndMinute() < 30) {
-                    e.setEndMinute(e.getEndMinute() + 30);
-                } else {
-                    e.setEndHour(e.getEndHour() + 1);
-                    e.setEndMinute(e.getEndMinute() - 30);
-                }
-                if (checkCollision(e)) {
-                    if (checkCollisionSpecial(eventList.get(i)).getType().equals("Break_Special")) {
-                        System.out.println(checkCollisionSpecial(eventList.get(i)));
-                        eventList.remove(getEventIndex(checkCollisionSpecial(eventList.get(i))));
-                    }
-                } else {
-                    e.setName("Work on something!");
-                    e.setType("Work");
-                    if (e.getEndMinute() > 5) {
-                        e.setEndMinute(e.getEndMinute() - 5);
-                    } else {
-                        e.setEndHour(e.getEndHour() - 1);
-                        e.setEndMinute(e.getEndMinute() + 55);
-                    }
-                    out.add(e);
-                    e = new Event(e);
-                    e.setName("Have a 5 minute break");
-                    e.setType("Break");
-                    e.setStartSecond(e.getEndSecond());
-                    e.setStartMinute(e.getEndMinute());
-                    e.setStartHour(e.getEndHour());
-                    if (e.getEndMinute() < 55) {
-                        e.setEndMinute(e.getEndMinute() + 5);
-                    } else {
-                        e.setEndHour(e.getEndHour() + 1);
-                        e.setEndMinute(e.getEndMinute() - 55);
-                    }
-                    out.add(e);
-                }
-            }
-            if (out.size() == 0) {
-                break;
-            }
-            eventList.addAll(out);
-            eventList = new ArrayList<>(Arrays.asList(dateSort(eventList)));
-            System.out.println(this);
-        }
     }
 
     private boolean checkCollision(Event e) {
